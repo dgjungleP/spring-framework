@@ -241,6 +241,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly)
 			throws BeansException {
 
+		//TODO 执行Bean 获取
 		String beanName = transformedBeanName(name);
 		Object beanInstance;
 
@@ -258,7 +259,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 			beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
-
 		else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
@@ -319,6 +319,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 				}
 
+				//TODO 初次创建Bean
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
