@@ -33,7 +33,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
@@ -82,7 +82,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 
 	/**
-	 * Configure the argument resolvers to use to use for resolving method
+	 * Configure the argument resolvers to use for resolving method
 	 * argument values against a {@code ServerWebExchange}.
 	 */
 	public void setArgumentResolvers(List<? extends HandlerMethodArgumentResolver> resolvers) {
@@ -157,7 +157,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 				return Mono.error(new IllegalStateException(formatInvokeError("Invocation failure", args), ex));
 			}
 
-			HttpStatus status = getResponseStatus();
+			HttpStatusCode status = getResponseStatus();
 			if (status != null) {
 				exchange.getResponse().setStatusCode(status);
 			}

@@ -16,9 +16,9 @@
 
 package org.springframework.web.server;
 
-import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.lang.Nullable;
 import org.springframework.web.ErrorResponseException;
 
@@ -41,7 +41,7 @@ public class ResponseStatusException extends ErrorResponseException {
 	 * Constructor with a response status.
 	 * @param status the HTTP status (required)
 	 */
-	public ResponseStatusException(HttpStatus status) {
+	public ResponseStatusException(HttpStatusCode status) {
 		this(status, null);
 	}
 
@@ -51,19 +51,8 @@ public class ResponseStatusException extends ErrorResponseException {
 	 * @param status the HTTP status (required)
 	 * @param reason the associated reason (optional)
 	 */
-	public ResponseStatusException(HttpStatus status, @Nullable String reason) {
+	public ResponseStatusException(HttpStatusCode status, @Nullable String reason) {
 		this(status, reason, null);
-	}
-
-	/**
-	 * Constructor with a response status and a reason to add to the exception
-	 * message as explanation, as well as a nested exception.
-	 * @param status the HTTP status (required)
-	 * @param reason the associated reason (optional)
-	 * @param cause a nested exception (optional)
-	 */
-	public ResponseStatusException(HttpStatus status, @Nullable String reason, @Nullable Throwable cause) {
-		this(status.value(), reason, cause);
 	}
 
 	/**
@@ -75,7 +64,34 @@ public class ResponseStatusException extends ErrorResponseException {
 	 * @since 5.3
 	 */
 	public ResponseStatusException(int rawStatusCode, @Nullable String reason, @Nullable Throwable cause) {
-		super(rawStatusCode, cause);
+		this(HttpStatusCode.valueOf(rawStatusCode), reason, cause);
+	}
+
+	/**
+	 * Constructor with a response status and a reason to add to the exception
+	 * message as explanation, as well as a nested exception.
+	 * @param status the HTTP status (required)
+	 * @param reason the associated reason (optional)
+	 * @param cause a nested exception (optional)
+	 */
+	public ResponseStatusException(HttpStatusCode status, @Nullable String reason, @Nullable Throwable cause) {
+		super(status, cause);
+		this.reason = reason;
+	}
+
+	/**
+	 * Constructor with a message code and arguments for resolving the error
+	 * "detail" via {@link org.springframework.context.MessageSource}.
+	 * @param status the HTTP status (required)
+	 * @param reason the associated reason (optional)
+	 * @param cause a nested exception (optional)
+	 * @since 6.0
+	 */
+	protected ResponseStatusException(
+			HttpStatusCode status, @Nullable String reason, @Nullable Throwable cause,
+			@Nullable String messageDetailCode, @Nullable Object[] messageDetailArguments) {
+
+		super(status, ProblemDetail.forStatus(status), cause, messageDetailCode, messageDetailArguments);
 		this.reason = reason;
 	}
 
@@ -105,16 +121,14 @@ public class ResponseStatusException extends ErrorResponseException {
 	 * @since 5.1.13
 	 * @deprecated as of 6.0 in favor of {@link #getHeaders()}
 	 */
-	@Deprecated
+	@Deprecated(since = "6.0")
 	public HttpHeaders getResponseHeaders() {
 		return HttpHeaders.EMPTY;
 	}
 
 	@Override
 	public String getMessage() {
-		HttpStatus code = HttpStatus.resolve(getRawStatusCode());
-		String msg = (code != null ? code : getRawStatusCode()) + (this.reason != null ? " \"" + this.reason + "\"" : "");
-		return NestedExceptionUtils.buildMessage(msg, getCause());
+		return getStatusCode() + (this.reason != null ? " \"" + this.reason + "\"" : "");
 	}
 
 }

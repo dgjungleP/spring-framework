@@ -124,7 +124,7 @@ final class AttributeMethods {
 	 * any {@link TypeNotPresentException TypeNotPresentExceptions}. In particular,
 	 * this method is designed to cover Google App Engine's late arrival of such
 	 * exceptions for {@code Class} values (instead of the more typical early
-	 * {@code Class.getAnnotations() failure}.
+	 * {@code Class.getAnnotations() failure}).
 	 * @param annotation the annotation to validate
 	 * @throws IllegalStateException if a declared {@code Class} attribute could not be read
 	 * @see #isValid(Annotation)
@@ -168,7 +168,7 @@ final class AttributeMethods {
 	 * @param index the index of the attribute to return
 	 * @return the attribute method
 	 * @throws IndexOutOfBoundsException if the index is out of range
-	 * (<tt>index &lt; 0 || index &gt;= size()</tt>)
+	 * ({@code index < 0 || index >= size()})
 	 */
 	Method get(int index) {
 		return this.attributeMethods[index];
